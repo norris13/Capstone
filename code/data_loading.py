@@ -4,26 +4,36 @@ import sys
 import os
 path = '../../../.local/lib/python2.7/site-packages/'
 from importlib.machinery import SourceFileLoader
-d = os.listdir(path) # returns list
 sys.path.append(path)
 import unidecode
 
 
 
-colnames = []
-with open('../data/asciipdb2021trv3_us.csv', newline='') as f:
-	reader = csv.reader(f)
-	for row in reader:
-		colnames = row
-		break
+'''
+get_columns
+
+returns:
+	
+
+'''
+def get_columns():
+	colnames = []
+	with open('../data/asciipdb2021trv3_us.csv', newline='') as f:
+		reader = csv.reader(f)
+		for row in reader:
+			colnames = row
+			break
 
 
-stringCols = [0, 1, 3, 5, 254, 219, 220, 221, 222, 255, 256, 257,  469, 470, 499, 500] # The following columns need to be read in as strings
-# note that columns 2 and 4 are also strings, but they are state and county names and are represented elsewhere as numerical values. The model doesn't need both.
-cols_to_use = []
-for (i, col) in enumerate(colnames):
-	if "MOE" not in col and i not in stringCols and i not in [2, 4]:
-		cols_to_use.append(i)
+	stringCols = [0, 1, 3, 5, 254, 219, 220, 221, 222, 255, 256, 257,  469, 470, 499, 500] # The following columns need to be read in as strings
+	# note that columns 2 and 4 are also strings, but they are state and county names and are represented elsewhere as numerical values. The model doesn't need both.
+	cols_to_use = []
+	names = []
+	for (i, col) in enumerate(colnames):
+		if "MOE" not in col and i not in stringCols and i not in [2, 4]:
+			cols_to_use.append(i)
+
+	return cols_to_use
 
 '''
 load_data(cols_to_use) is a function which will read in the data and return numpy arrays of the specified fields, split into training and testing datasets
