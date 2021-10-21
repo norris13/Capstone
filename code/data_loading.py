@@ -39,11 +39,13 @@ def get_columns_for_reading():
 	
 	# the column indeces of the csv we want to read in. All values which are not strings or MOE
 	cols_to_use = []
+	names = []
 	for (i, col) in enumerate(colnames):
 		if "MOE" not in col and i not in stringCols and i not in [2, 4]:
 			cols_to_use.append(i)
+			names.append(col)
 
-	return cols_to_use
+	return cols_to_use, names
 
 '''
 load_data(cols_to_use) is a function which will read in the data and return numpy arrays of the specified fields, split into training and testing datasets
@@ -53,6 +55,8 @@ cols_to_use: array of columns to be included in the training and testing dataset
 returns two numpy arrays, train and test, which are the training and testing datasets
 '''
 def load_data(cols_to_use, n_rows):
+
+	# read in the float values from the csv
 	train_data = np.genfromtxt('../data/asciipdb2021trv3_us_tabs.txt', delimiter='\t', skip_header=1, 
 		encoding=None, dtype=np.float, usecols=cols_to_use, max_rows=n_rows)
 	test_data = np.genfromtxt('../data/asciipdb2021trv3_us_tabs.txt', delimiter = '\t', skip_header = 55001, encoding=None, dtype=np.float, usecols = cols_to_use)
@@ -61,39 +65,44 @@ def load_data(cols_to_use, n_rows):
 	
 	stringCols = [0, 1, 3, 5, 254, 219, 220, 221, 222, 255, 256, 257,  469, 470, 499, 500] # The following columns need to be read in as strings
 	
-	'''
+	# read in the strings
 	train_strings = np.genfromtxt('../data/asciipdb2021trv3_us_tabs.txt', delimiter='\t', skip_header=1,
 		encoding=None, dtype=str, usecols=stringCols, max_rows=n_rows)
 	test_strings = np.genfromtxt('../data/asciipdb2021trv3_us_tabs.txt', delimiter = '\t', skip_header = 55001, encoding=None, dtype=str, usecols = stringCols)
 
+	# for each index(i) and actual row (row) in test_strings
 	for i,row in enumerate(test_strings):
+		# for each column index (j) and actual string entry (s) in row
 		for j,s in enumerate(row):
-			test_strings[i,j] = s.replace('$','').replace(',','').replace(' ','').replace('\"','')
+			# try to replace all non 0-9 characters with nothing
+			try:
+				test_strings[i,j] = s.replace('$','').replace(',','').replace(' ','').replace('\"','')
+			except:
+				pass
+	
+	# all empty values will be replaced with nan (not a number)
 	test_strings[test_strings == ''] = 'nan'
+	# convert the strings to floats
 	converted = test_strings.astype(np.float)
 
+	# repeat above process but for train_strings
 	for i,row in enumerate(train_strings):
 		for j,s in enumerate(row):
 			try:
 				train_strings[i,j] = s.replace('$','').replace(',','').replace(' ','').replace('\"','')
 			except:
-				print(row)
-				print(s)
-				return 3, 4
+				pass
 	train_strings[train_strings == ''] = 'nan'
 	converted = train_strings.astype(np.float)
 
+	# append the columns which WERE strings to their respective numpy float matrix
 	test = np.concatenate((test_data, test_strings), axis = 1)
 	train = np.concatenate((train_data, train_strings), axis = 1)
+
+	# recast the whole matrix as a float
 	test = test.astype(np.float)
 	train = train.astype(np.float)
+
+	# return the final train and test datasets
 	return train, test
-	'''
-	return train_data, test_data # delete this
-'''
-print(test_data.shape)
-print(test_data[1])
-print(type(test_data[1]))
-print(test_data[1][1])
-print(test_data[1, 1])
-'''
+	

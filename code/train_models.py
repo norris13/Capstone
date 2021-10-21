@@ -20,7 +20,7 @@ stringCols = [0, 1, 3, 5, 254, 219, 220, 221, 222, 255, 256, 257,  469, 470, 499
 # note that columns 2 and 4 are also strings, but they are state and county names and are represented elsewhere as numerical values. The model doesn't need both.
 cols_to_use = [282]
 names = ['dummy']
-# cols 288 - 513 contain the percentage variables we are about
+# cols 288 - 513 contain the percentage variables we care about
 for (i, col) in enumerate(colnames):
 	if "MOE" not in col and i not in stringCols and i not in [2, 4] and i >= 287 and i < 513:
 		if i == 288:
