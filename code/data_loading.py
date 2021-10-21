@@ -48,14 +48,17 @@ def get_columns_for_reading():
 	return cols_to_use, names
 
 '''
-load_data(cols_to_use) is a function which will read in the data and return numpy arrays of the specified fields, split into training and testing datasets
+load_data(cols_to_use, n_rows = 55000, include_strings = True) 
+		A function which will read in the data and return numpy arrays of the specified fields, split into training and testing datasets
 
 cols_to_use: array of columns to be included in the training and testing datasets. Entries in cols_to_use should be integers
+n_rows: number of rows to read in to the training dataset
+include_strings: do you want the string columns
 
 returns two numpy arrays, train and test, which are the training and testing datasets
 '''
-def load_data(cols_to_use, n_rows):
-
+def load_data(cols_to_use, n_rows = 55000, include_strings = False):
+	
 	# read in the float values from the csv
 	train_data = np.genfromtxt('../data/asciipdb2021trv3_us_tabs.txt', delimiter='\t', skip_header=1, 
 		encoding=None, dtype=np.float, usecols=cols_to_use, max_rows=n_rows)
