@@ -112,3 +112,40 @@ def load_data(cols_to_use, n_rows = 55000, include_strings = False):
 		# return the final train and test datasets
 		return train, test
 	
+
+'''
+compute_bounds()
+	A function which reads in the columns individually and computes the min value, max value, and mean value and stores them
+
+'''
+def compute_bounds(nCols):
+	mins = np.zeros(nCols)
+	maxes = np.zeros(nCols)
+	means = np.zeros(nCols)
+
+	stringCols = [0, 1, 3, 5, 254, 219, 220, 221, 222, 255, 256, 257,  469, 470, 499, 500]
+
+	# for each column index
+	for col_idx in range(nCols):
+		if col_idx not in stringCols:
+			col = np.genfromtxt('../data/asciipdb2021trv3_us_tabs.txt', delimiter='\t', skip_header=1, 
+				encoding=None, dtype=np.float, usecols=col_idx)
+			mins[col_idx] = np.min(col)
+			maxes[col_idx] = np.max(col)
+			means[col_idx] = np.mean(col)
+		else:
+			col = np.genfromtxt('../data/asciipdb2021trv3_us_tabs.txt', delimiter='\t', skip_header=1, 
+				encoding=None, dtype=str, usecols=col_idx)
+			for j,s in enumerate(col):
+				try:
+					col[j] = s.replace('$','').replace(',','').replace(' ','').replace('\"','')
+				except:
+					pass
+			col[col == ''] = 'nan'
+			converted = col.astype(np.float)
+
+			mins[col_idx] = np.min(converted)
+			maxes[col_idx] = np.max(converted)
+			means[col_idx] = np.mean(converted)
+
+	
